@@ -1,8 +1,38 @@
 var canvasWidth, canvasHeight;
-var restart, winner, player1, player2, pause = 'false';
+var restart, winner, player, pause = 'false';
 
-var myVoice = new p5.Speech('Google UK English Male');
+var highScore = 30, highPlayer = 'John';
+
+// var myVoice = new p5.Speech('Google UK English Male');
 // var listenVoice = new p5.SpeechRec();
+console.log("started");
+
+//variables to set the initial conditions of the game
+//variables that control the ball's properties
+var ballSpeed = 7;
+var dirX = true,
+  dirY = true,
+  posX = 75,
+  posY = 50,
+  circleDim = 50,
+  movX = 4;
+
+//variables that control the bat's properties
+var rect1X = 0,
+  rect2X = 780,
+  rectY = 150,
+  // rectY = 150,
+  rectMov = 70,
+  rectWidth = 20,
+  rectHeight = 120,
+  rectd = canvasWidth - 20;
+
+//variables that control the scoring
+var points = 0;
+  // point = 0,
+  // points = " : ",
+  // leftWins = "Left Wins",
+  // rightWins = "Right Wins";
 
 function setup() {
   canvasWidth = windowWidth;
@@ -15,11 +45,11 @@ function setup() {
 }
 
 function playerNames() {
-  myVoice.speak('Please enter your Name');
-  player1 = prompt("Player 1 enter your name", "Name");
+  // myVoice.speak('Please enter your Name');
+  player = prompt("Please enter your name", "Name");
 
-  myVoice.speak('Please enter your Name');
-  player2 = prompt("Player 2 enter your name", "Name");
+  // myVoice.speak('Please enter your Name');
+  // player2 = prompt("Player 2 enter your name", "Name");
 }
 
 function draw() {
@@ -57,60 +87,41 @@ function draw() {
 function reset() {
   posX = 75;
   posY = 50;
-  rect1Y = 150;
-  rect2Y = 150;
-  pointL = 0;
-  pointR = 0;
+  rectY = 150;
+  // rect2Y = 150;
+  points = 0;
+  // pointR = 0;
   // playerNames();
   //   delayTime(0.5);
 }
 
-//variables to set the initial conditions of the game
-//variables that control the ball's properties
-var ballSpeed = 7;
-var dirX = true,
-  dirY = true,
-  posX = 75,
-  posY = 50,
-  circleDim = 50,
-  movX = 4;
-
-//variables that control the bat's properties
-var rect1X = 0,
-  rect2X = 780,
-  rect1Y = 150,
-  rect2Y = 150,
-  rectMov = 50,
-  rectWidth = 20,
-  rectHeight = 120,
-  rectd = canvasWidth - 20;
-
-//variables that control the scoring
-var pointL = 0,
-  pointR = 0,
-  points = " : ",
-  leftWins = "Left Wins",
-  rightWins = "Right Wins";
 
 function ball() {
   // console.log('ball');
+
   if (dirY) {
     posY += ballSpeed;
   } else {
     posY -= ballSpeed;
   }
+
+
   if (posY > canvasHeight - circleDim / 2 || posY < circleDim / 2) {
     dirY = !dirY;
   }
   if (posX > canvasWidth - circleDim / 2 || posX < circleDim / 2) {
     dirX = !dirX;
   }
+
   if (dirX) {
     posX += ballSpeed;
   } else {
     posX -= ballSpeed;
   }
+
   fill(255);
+  // console.log("ball");
+  
   circle(posX, posY, circleDim);
 }
 
@@ -118,19 +129,19 @@ function ball() {
 
 function bats() {
   fill(235, 122, 52);
-  rect(0, rect1Y, rectWidth, rectHeight);
-  rect(canvasWidth - rectWidth, rect2Y, rectWidth, rectHeight);
+  rect(0, rectY, rectWidth, rectHeight);
+  rect(canvasWidth - rectWidth, rectY, rectWidth, rectHeight);
 }
 
 function keyPressed() {
-  if (keyCode == UP_ARROW && rect2Y > 0) {
-    rect2Y -= rectMov;
-  } else if (keyCode == DOWN_ARROW && rect2Y < 300) {
-    rect2Y += rectMov;
-  } else if (keyCode == SHIFT && rect1Y > 0) {
-    rect1Y -= rectMov;
-  } else if (keyCode == CONTROL && rect1Y < 300) {
-    rect1Y += rectMov;
+  if (keyCode == UP_ARROW && rectY > 0) {
+    rectY -= rectMov;
+  } else if (keyCode == DOWN_ARROW && rectY < 300) {
+    rectY += rectMov;
+  // } else if (keyCode == SHIFT && rectY > 0) {
+  //   rect1Y -= rectMov;
+  // } else if (keyCode == CONTROL && rect1Y < 300) {
+  //   rect1Y += rectMov;
   } else if (keyCode === DELETE) {
     reset();
   } else if (keyCode === ALT && pause === 'false') {
@@ -146,14 +157,18 @@ function keyPressed() {
 
 function scoring() {
 
-  if (posX <= rectWidth + circleDim / 2 && ((posY + circleDim / 2) < rect1Y || (posY - circleDim / 2) > rect1Y + 100)) {
-    pointR++;
-    myVoice.speak('Another point for'+ player2);
-    resetBallPos();
-  } else if ((posX + circleDim / 2 >= canvasWidth - rectWidth) && ((posY + circleDim / 2) < rect2Y || (posY - circleDim / 2) > rect2Y + 100)) {
-    pointL++;
-    myVoice.speak('Another point for'+ player1);
-    resetBallPos();
+  if ((posY - circleDim / 2) >= rectY && (posY + circleDim / 2) <= rectY && posX == rectWidth + circleDim / 2  || posX + circleDim / 2 == canvasWidth - rectWidth) {
+    points++;
+    // console.log("posY - circleDim / 2 is " + (posY - circleDim / 2) + "Rect is " + rectY);
+    
+    console.log(points);
+    
+    // myVoice.speak('Another point for'+ player2);
+    // resetBallPos();
+  // } else if ((posX + circleDim / 2 >= canvasWidth - rectWidth) && ((posY + circleDim / 2) < rect2Y || (posY - circleDim / 2) > rect2Y + 100)) {
+    // pointL++;
+    // myVoice.speak('Another point for'+ player1);
+    // resetBallPos();
   }
 }
 
@@ -166,29 +181,32 @@ function scoreCard() {
   let rules = "Use top, bottom, shift and ctrl keys to control the players. First to score 5 points wins.";
   fill(255);
   textSize(26);
-  text(player1, windowWidth / 2 - 125, windowHeight - 200);
-  text(pointL, windowWidth / 2 - 100, windowHeight - 150);
-  text(points, windowWidth / 2, windowHeight - 150);
-  text(player2, windowWidth / 2 + 75, windowHeight - 200);
-  text(pointR, windowWidth / 2 + 100, windowHeight - 150);
+  text("Your Score: " + points, 150, windowHeight - 200);
+  text("Player Name: " + player, 150, windowHeight - 150);
+  text("Highest Score: " + highScore, windowWidth - 300, windowHeight - 200);
+  text("Player: " + highPlayer, windowWidth - 300, windowHeight - 150);
+  // text(pointL, windowWidth / 2 - 100, windowHeight - 150);
+  // text(points, windowWidth / 2, windowHeight - 150);
+  // text(player2, windowWidth / 2 + 75, windowHeight - 200);
+  // text(pointR, windowWidth / 2 + 100, windowHeight - 150);
 
-  text(rules, windowWidth / 2 - 500, windowHeight - 50)
+  // text(rules, windowWidth / 2 - 500, windowHeight - 50)
 
-  if (pointL == 5 || pointR == 5) {
-    if (pointL == 5) {
-      myVoice.speak(player1+'wins');
-      winner = player1 + " wins!!!";
-    } else if (pointR == 5) {
-      myVoice.speak(player2+'wins');
-      winner = player2 + " wins!!!";
-    }
+  // if (pointL == 5 || pointR == 5) {
+  //   if (pointL == 5) {
+  //     // myVoice.speak(player1+'wins');
+  //     winner = player1 + " wins!!!";
+  //   } else if (pointR == 5) {
+  //     // myVoice.speak(player2+'wins');
+  //     winner = player2 + " wins!!!";
+  //   }
 
-    fill(0);
-    textSize(46);
-    text(winner, windowWidth / 2 - 150, windowHeight / 2 - 50);
-    rules = "Press delete to reset"
-    ballSpeed = 0;
-  }
+  //   fill(0);
+  //   textSize(46);
+  //   // text(winner, windowWidth / 2 - 150, windowHeight / 2 - 50);
+  //   rules = "Press delete to reset"
+  //   ballSpeed = 0;
+  // }
 
 }
 
@@ -198,8 +216,8 @@ function resetBallPos() {
   //   delayTime(3);
   posX = canvasWidth / 2 - circleDim / 2;
   posY = canvasHeight / 2;
-  rect1Y = 150;
-  rect2Y = 150;
+  rectY = 150;
+  // rect2Y = 150;
 }
 
 //Processing code ends
